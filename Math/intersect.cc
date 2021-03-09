@@ -17,6 +17,19 @@
 
 int BSpherePlaneIntersect(const BSphere *bs, Plane *pl) {
 
+	float distan = pl->distance(bs->m_centre);// Distancia del centro de la esfera al plano
+
+    // Si la distancia <= radio, hay colisión
+	if(distan > bs->m_radius) {
+		if(distan < 0) {
+			return -1*IREJECT;
+		} else {
+			return IREJECT;
+		}
+		
+	} else {
+		return IINTERSECT;
+	}
 }
 
 
@@ -26,7 +39,19 @@ int BSpherePlaneIntersect(const BSphere *bs, Plane *pl) {
 //    IREJECT don't intersect
 
 int  BBoxBBoxIntersect(const BBox *bba, const BBox *bbb ) {
-
+	//Eje x
+	if( (bba->m_min[0] > bbb->m_max[0]) || (bbb->m_min[0] > bba->m_max[0]) ){
+		return IREJECT;		
+	}	
+	//Eje y
+	if((bba->m_min[1] > bbb->m_max[1]) || (bbb->m_min[1] > bba->m_max[1])){
+		return IREJECT;		
+	}	
+	//Eje z
+	if((bba->m_min[2] > bbb->m_max[2]) || (bbb->m_min[2] > bba->m_max[2])){
+		return IREJECT;		
+	}	
+	return IINTERSECT;
 }
 
 // @@ TODO: test if a BBox and a plane intersect.
@@ -36,7 +61,29 @@ int  BBoxBBoxIntersect(const BBox *bba, const BBox *bbb ) {
 //    IINTERSECT intersect
 
 int  BBoxPlaneIntersect (const BBox *theBBox, Plane *thePlane) {
+	Vector3 vec1;
+	Vector3 vec2;
+	for(int dim=0; dim<3; dim++) {
+		//modificar valores para la direccion
+		if(thePlane->m_n[dim] > 0) {
+			vec1[dim] = theBBox->m_min[dim];
+			vec2[dim] = theBBox->m_max[dim];
+		} else {
+			vec1[dim] = theBBox->m_max[dim];
+			vec2[dim] = theBBox->m_min[dim];
+		}
+	}
+	
+	int side1 = thePlane->whichSide(vec1);
+	int side2 = thePlane->whichSide(vec2);
 
+	if(side1 == side2) {
+		if(side1 > 0)
+			return IREJECT;
+		else if(side1 < 0)
+			return -1*IREJECT;
+	}
+	return IINTERSECT;	
 }
 
 // Test if two BSpheres intersect.
@@ -52,6 +99,7 @@ int BSphereBSphereIntersect(const BSphere *bsa, const BSphere *bsb ) {
 	float rs = bsa->m_radius + bsb->m_radius;
 	if (ls > (rs * rs)) return IREJECT; // Disjoint
 	return IINTERSECT; // Intersect
+	
 }
 
 
