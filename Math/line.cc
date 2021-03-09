@@ -22,15 +22,23 @@ Line & Line::operator=(const Line & line) {
 // Note: Check than A and B are not too close!
 
 void Line::setFromAtoB(const Vector3 & A, const Vector3 & B) {
+	Vector3 v;
+	m_O = A; //m_O -> punto origen
+	v = B-A; //vector que va del punto A a B
 
+	if(v.length()<Constants::distance_epsilon){
+		printf("Los puntos A y B son iguales"); 
+		m_d=Vector3(0,0,0);
+
+	}else{
+		m_d = v.normalize();//m_d vector director
+	}
 }
 
 // @@ TODO: Give the point corresponding to parameter u
 
 Vector3 Line::at(float u) const {
-	Vector3 res;
-
-	return res;
+	return m_O + u * m_d;
 }
 
 // @@ TODO: Calculate the parameter 'u0' of the line point nearest to P
@@ -38,7 +46,13 @@ Vector3 Line::at(float u) const {
 // u0 = m_d*(P-m_o) / m_d*m_d , where * == dot product
 
 float Line::paramDistance(const Vector3 & P) const {
-	float res = 0.0f;
+	float res = m_d.dot(P-m_O);
+	float den = m_d.dot(m_d);	
+	if(den < Constants::distance_epsilon){
+		printf("El dividendo es 0");	
+	}else{
+		res = res/den; 
+	}
 
 	return res;
 }
@@ -50,6 +64,9 @@ float Line::paramDistance(const Vector3 & P) const {
 
 float Line::distance(const Vector3 & P) const {
 	float res = 0.0f;
+	Vector3 dist = Vector3();
+	dist = P - (m_O + paramDistance(P)*m_d);
+	res = dist.length();
 
 	return res;
 }
