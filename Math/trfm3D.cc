@@ -198,6 +198,10 @@ void Trfm3D::clone( const Trfm3D *T ) {	clone(*T); }
 Vector3 Trfm3D::transformPoint(const Vector3 & P) const {
 	Vector3 res;
 
+	res[0] = m_c1[0]*m_scl*P[0]+m_c2[0]*m_scl*P[1]+m_c3[0]*m_scl*P[2] + m_tr[0];
+	res[1] = m_c1[1]*m_scl*P[0]+m_c2[1]*m_scl*P[1]+m_c3[1]*m_scl*P[2] + m_tr[1];
+	res[2] = m_c1[2]*m_scl*P[0]+m_c2[2]*m_scl*P[1]+m_c3[2]*m_scl*P[2] + m_tr[2];
+
 	return res;
 }
 
@@ -209,6 +213,10 @@ Vector3 Trfm3D::transformPoint(const Vector3 & P) const {
 
 Vector3 Trfm3D::transformVector(const Vector3 & V) const {
 	Vector3 res;
+
+	res[0] = m_c1[0]*m_scl*V[0]+m_c2[0]*m_scl*V[1]+m_c3[0]*m_scl*V[2];
+	res[1] = m_c1[1]*m_scl*v[0]+m_c2[1]*m_scl*V[1]+m_c3[1]*m_scl*V[2];
+	res[2] = m_c1[2]*m_scl*V[0]+m_c2[2]*m_scl*V[1]+m_c3[2]*m_scl*V[2];
 
 	return res;
 }
@@ -398,6 +406,9 @@ void Trfm3D::setScale(float scale ) {
 
 void Trfm3D::setRotAxis(const Vector3 & V, const Vector3 & P, float angle ) {
 
+	setTrans(P);//Hacemos el set de la 1º operación
+	addRotVec(V,angle); //añadimos la rotacion
+	addTrans(P*-1); //Añadimos la última transormación
 }
 
 
