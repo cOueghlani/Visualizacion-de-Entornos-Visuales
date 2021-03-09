@@ -276,10 +276,18 @@ Node * Node::cycleChild(size_t idx) {
 void Node::addChild(Node *theChild) {
 
 	if (theChild == 0) return;
+
 	if (m_gObject) {
-		// node has a gObject, so print warning
+		// node has a gObject, so print warning:
+		printf("WARNING. The node has alredy a associated object!!!");
+		
 	} else {
-		// node does not have gObject, so attach child
+		// node does not have gObject, so attach child:
+		this->m_children->push_back(theChild)
+
+		theChild->m_parent = this;
+
+		updateGS();		
 	}
 }
 
@@ -403,6 +411,23 @@ void Node::draw() {
 		BBoxGL::draw( m_containerWC );
 
 	/* =================== PUT YOUR CODE HERE ====================== */
+
+	if(m_gObject) { //SI ES NODO HOJA, DIBUJAR EL OBJETO GEOMETRICO:
+
+		rs->push(RenderState::modelview); // push current matrix into modelview stack
+		rs->addTrfm(RenderState::modelview, m_placementWC); // Add T transformation to modelview
+		m_gObject->draw(); // draw geometry object (gobj)
+		rs->pop(RenderState::modelview); //Elimina el espacio de la pila
+	
+	} else { //SINO, DIBUJAR RECURSIVAMENTE LOS HIJOS
+
+		for(list<Node *>::iterator it = m_children.begin(), end = m_children.end();
+	        it != end; ++it) {
+	        Node *theChild = *it;
+	        theChild->draw(); // or any other thing
+	    }
+
+	}
 
 	/* =================== END YOUR CODE HERE ====================== */
 
