@@ -283,9 +283,8 @@ void Node::addChild(Node *theChild) {
 		
 	} else {
 		// node does not have gObject, so attach child:
-		this->m_children->push_back(theChild)
-
 		theChild->m_parent = this;
+		this->m_children.push_back(theChild);
 
 		updateGS();	// segundo commit: llamar a adaptar el grafo de la escena
 	}
@@ -349,7 +348,7 @@ void Node::propagateBBRoot() {
 
 void Node::updateBB () {
 
-	if(m_gObject)
+	if(m_gObject){
 		
 		m_containerWC->clone(m_gObject->getContainer()); //El BBox del nodo es el BBox del objeto
 		m_containerWC->transform(m_placementWC); //trasformado por la posicion global del nodo
@@ -382,8 +381,7 @@ void Node::updateWC() {
 	// Se comienza siempre desde el root
 	if(m_parent==0){	
 		//Si estamos en el nodo raiz
-		m_placementWC -> clone(m_placement)
-	
+		m_placementWC -> clone(m_placement);	
 	}else{
 		//Si es un nodo intermedio u hoja
 		//m_placementWC -> m_parent->m_placementWC COMBINADO con m_placement (ADD)

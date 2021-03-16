@@ -16,7 +16,7 @@ Camera::Camera() :
 	m_E(Vector3::ZERO),
 	m_R(Vector3::UNIT_X),
 	m_U(Vector3::UNIT_Y),
-	m_D(-1.0f*Vector3::UNIT_Z) {
+	m_D(Vector3::UNIT_Z) {
 	savePosition();
 	for(int i = 0; i < MAX_CLIP_PLANES; ++i)
 		m_fPlanes[i] = new Plane();
@@ -143,6 +143,27 @@ void OrthographicCamera::updateProjection() {
 void PerspectiveCamera::updateProjection() {
 	/* =================== PUT YOUR CODE HERE ====================== */
 
+	//pagina 29
+
+	//m_projTrfm (transformacion 3D) -->
+
+	m_top = m_near*tanf(m_fovy/2); //Calculo de "top"
+	m_bottom = -1*m_top; //Calculo de "bottom"
+	m_right = m_aspectRatio*m_top; //Calculo "right"
+	m_left = -1*m_right; //Calculo "left"
+
+	m_projTrfm->setFrustum(m_left, m_right, m_bottom, m_top, m_near, m_far);
+	
+	/**
+	 * Set the trfm so that it performs a perspective projection given by the
+	 * frustum parameters
+	 
+	void setFrustum(float left, float right,
+					float bottom, float top,
+					float near, float far);
+
+	*/
+
 	/* =================== END YOUR CODE HERE ====================== */
 	updateFrustumPlanes();
 }
@@ -172,7 +193,22 @@ void  Camera::lookAt(const Vector3 & E,
 					 const Vector3 & at,
 					 const Vector3 & up) {
 	/* =================== PUT YOUR CODE HERE ====================== */
+	//Ver transparencia LOOK-AT (pagina 35)
+	//Sistema de referencia de la camara: R, U, D
 
+	
+	m_E = E;
+
+	m_D = E-at;
+	m_D.normalize();
+
+	//m_R = up(normalizado) x m_D (producto vectorial... vector3: cross, crossVectors)
+	Vector3 upnormal = up.normalize();
+	m_R = upnormal.cross(m_D);
+
+	//m_U = D x R (producto vectorial)
+	m_U = m_D.cross(m_R);
+	
 	/* =================== END YOUR CODE HERE ====================== */
 	setViewTrfm();
 }
