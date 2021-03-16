@@ -314,6 +314,12 @@ void Node::detach() {
 
 void Node::propagateBBRoot() {
 
+	// FUNCION RECURSIVA (tercer commit)
+
+	updateBB(); //Actualiza el BBox del nodo
+	if(m_parent) {
+		m_parent->propagateBBRoot(); //Propagate BBox to parent until root is reached (la raiz no tiene padre)
+	}
 }
 
 // @@ TODO: auxiliary function
@@ -408,9 +414,9 @@ void Node::updateGS() {
 	updateWC(); // segundo commit
 
 	//tercer commit
-	//if(m_parent) {
-	//	m_parent->propagateBBRoot();
-	//}
+	if(m_parent) {
+		m_parent->propagateBBRoot();
+	}
 }
 
 
