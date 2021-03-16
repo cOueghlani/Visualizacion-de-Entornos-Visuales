@@ -287,7 +287,7 @@ void Node::addChild(Node *theChild) {
 
 		theChild->m_parent = this;
 
-		updateGS();		
+		updateGS();	// segundo commit: llamar a adaptar el grafo de la escena
 	}
 }
 
@@ -343,6 +343,18 @@ void Node::propagateBBRoot() {
 
 void Node::updateBB () {
 
+	if(m_gObject)
+		
+		m_containerWC->clone(m_gObject->getContainer()); //El BBox del nodo es el BBox del objeto
+		m_containerWC->transform(m_placementWC); //trasformado por la posicion global del nodo
+	
+	} else {		
+		for(list<Node *>::iterator it = m_children.begin(), end = m_children.end();	
+        	it != end; ++it) {
+        	Node *theChild = *it;
+        	m_containerWC->include(theChild->m_containerWC); 
+		}
+	}
 }
 
 // @@ TODO: Update WC (world coordinates matrix) of a node and
@@ -361,6 +373,26 @@ void Node::updateBB () {
 //    See Recipe 1 in for knowing how to iterate through children.
 
 void Node::updateWC() {
+	// Se comienza siempre desde el root
+	if(m_parent==0){	
+		//Si estamos en el nodo raiz
+		m_placementWC -> clone(m_placement)
+	
+	}else{
+		//Si es un nodo intermedio u hoja
+		//m_placementWC -> m_parent->m_placementWC COMBINADO con m_placement (ADD)
+		m_placementWC->clone(m_parent->m_placementWC);
+		m_placementWC->add(m_placement);
+	}
+
+	//Llamar recursivamente a los hijos
+	for(list<Node *>::iterator it = m_children.begin(), end = m_children.end();
+        it != end; ++it) {
+        Node *theChild = *it;
+		theChild->updateWC();
+    }
+
+	//update Bounding Box to world coordinates // TERCER COMMIT
 
 }
 
@@ -373,7 +405,12 @@ void Node::updateWC() {
 // - Propagate Bounding Box to root (propagateBBRoot), starting from the parent, if parent exists.
 
 void Node::updateGS() {
+	updateWC(); // segundo commit
 
+	//tercer commit
+	//if(m_parent) {
+	//	m_parent->propagateBBRoot();
+	//}
 }
 
 
@@ -411,8 +448,25 @@ void Node::draw() {
 		BBoxGL::draw( m_containerWC );
 
 	/* =================== PUT YOUR CODE HERE ====================== */
+	
+	/*//MODO LOCAL
+	s->push(RenderState::modelview);
+	rs->addTrfm(RenderState::modelview, T); /// T == TRANSFORMACION LOCAL m_placement
 
-	if(m_gObject) { //SI ES NODO HOJA, DIBUJAR EL OBJETO GEOMETRICO:
+	if(m_gObject) 
+		m_gObject->draw();
+	else{
+		for(list<Node *>::iterator it = m_children.begin(), end = m_children.end();
+		    it != end; ++it) {
+		    Node *theChild = *it;
+	        theChild->draw(); // or any other thing
+		}
+	}	
+	rs->pop(RenderState::modelview);
+
+	*/
+	//MODO GLOBAL (2º y 3º commit)
+	if(m_gObject) { //SI ES NODO HOJA, TIENE UN OBJETOY LO SOY A DIBUJAR -> DIBUJAR EL OBJETO GEOMETRICO:
 
 		rs->push(RenderState::modelview); // push current matrix into modelview stack
 		rs->addTrfm(RenderState::modelview, m_placementWC); // Add T transformation to modelview
