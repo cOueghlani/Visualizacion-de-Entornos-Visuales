@@ -42,10 +42,32 @@ bool Avatar::getWalkorFly() const {
 bool Avatar::advance(float step) {
 
 	Node *rootNode = Scene::instance()->rootNode();
+
+	/// Muevo camara
 	if (m_walk)
 		m_cam->walk(step);
 	else
 		m_cam->fly(step);
+
+	//Colocar la esfera en la posicion nueva de la camara
+	// COMPROBAR SI HAY COLISION DE LA camara(esfera) CON EL GRAFO DE LA ESCENA
+	m_bsph->setPosition(m_cam->getPosition()); 
+
+	// Si hay colision entre esfera y el grafo(BBox del nodo raiz)
+	// Llamar a const Node *Node::checkCollision
+	if(rootNode->checkCollision(m_bsph) != 0) { 
+			// Muevo camara para atras
+			if (m_walk)
+				m_cam->walk(-step);
+			else
+				m_cam->fly(-step);
+
+	//Si no hay colision
+	} else {
+		//No hago nada
+		return true;
+	}
+
 	return true;
 }
 

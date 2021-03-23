@@ -525,7 +525,31 @@ void Node::frustumCull(Camera *cam) {
 
 const Node *Node::checkCollision(const BSphere *bsph) const {
 	if (!m_checkCollision) return 0;
-	/* =================== PUT YOUR CODE HERE ====================== */
+	/* =================== PUT YOUR CODE HERE ====================== */     
+
+	//Si intersecta
+	if(BSphereBBoxIntersect(bsph, m_containerWC) == IINTERSECT) {
+		
+		//Es un nodo HOJA -> hay colision 
+		if(m_gObject) { 
+			return m_parent;
+
+		//Es un nodo intermedio
+		} else { 
+			//Llamada recursiva a los HIJOS
+			for(list<Node *>::const_iterator it = m_children.begin(), end = m_children.end(); it != end; ++it) {
+				const Node *theChild = *it;
+				return theChild->checkCollision(bsph);
+			}
+			
+			//Si para ningun hijo hay colision... no colisiona
+			return 0;				
+		}
+		
+	//Si no intersecta	
+	}else
+		return 0;
+    
 
 	/* =================== END YOUR CODE HERE ====================== */
 }
