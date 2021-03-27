@@ -396,7 +396,7 @@ void Node::updateWC() {
 		theChild->updateWC();
     }
 
-	//update Bounding Box to world coordinates // TERCER COMMIT
+	updateBB(); // TERCER COMMIT
 
 }
 
