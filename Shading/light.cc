@@ -104,7 +104,7 @@ void Light::placeScene() {
 		} else {
 			m_positionEye = modelView.transformPoint(m_position);
 			m_spotDirectionEye = modelView.transformVector(m_spotDirection);
-			m_spotDirectionEye = m_spotDirectionEye.normalize();
+			m_spotDirectionEye = m_spotDirectionEye.normalize(); //Normalizar la variable
 		}
 	
 

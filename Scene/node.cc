@@ -354,6 +354,9 @@ void Node::updateBB () {
 		m_containerWC->transform(m_placementWC); //trasformado por la posicion global del nodo
 	
 	} else {		
+
+		m_containerWC -> init();
+
 		for(list<Node *>::iterator it = m_children.begin(), end = m_children.end();	
         	it != end; ++it) {
         	Node *theChild = *it;
@@ -527,19 +530,23 @@ const Node *Node::checkCollision(const BSphere *bsph) const {
 	if (!m_checkCollision) return 0;
 	/* =================== PUT YOUR CODE HERE ====================== */     
 
+	const Node *resultado;
 	//Si intersecta
 	if(BSphereBBoxIntersect(bsph, m_containerWC) == IINTERSECT) {
 		
 		//Es un nodo HOJA -> hay colision 
 		if(m_gObject) { 
-			return m_parent;
+			return this;
 
 		//Es un nodo intermedio
 		} else { 
 			//Llamada recursiva a los HIJOS
 			for(list<Node *>::const_iterator it = m_children.begin(), end = m_children.end(); it != end; ++it) {
 				const Node *theChild = *it;
-				return theChild->checkCollision(bsph);
+				resultado = theChild->checkCollision(bsph);
+				if(resultado){//si se ha chocado
+					return resultado;
+				}
 			}
 			
 			//Si para ningun hijo hay colision... no colisiona

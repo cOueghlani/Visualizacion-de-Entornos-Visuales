@@ -75,15 +75,16 @@ void luz_direccional (in int i,in vec3 L,in vec3 N,in vec3 V, inout vec3 color_d
 
 		color_especular += theLights[i].specular * theMaterial.specular * f_specular * NoL;
 	}
-
-	
-
 }
+
+//void luz_posiciohal(in int i,in vec3 L,in vec3 N,in vec3 V, inout vec3 color_difuso, inout vec3 color_especular){
+
+//}
 
 
 void main() {
 	
-	vec3 L,N;
+	vec3 L,N,V,Ln;
 	vec4 L4, N4, positionEye, V4;
 
 	//Normal del vertice del espacio del modelo al espacio de la camara
@@ -93,43 +94,50 @@ void main() {
 	//Posicion del vertice del espacio del modelo al espacio de la camara
 	positionEye = modelToCameraMatrix * vec4(v_position, 1.0);
 
-	V4= (0.0, 0.0, 0.0, 1.0) - positionEye;
+	V4= (0.0,0.0,0.0,1.0) - positionEye;
 	V= normalize(V4.xyz);
 
 	//acumuladores donde voy dejando el color
 	vec3 color_difuso = vec3(0.0, 0.0, 0.0); //tambien se puede poner -> vec3 color_difuso = vec3(0.0);
-
+	vec3 color_especular = vec3(0.0, 0.0, 0.0);
 
 	for(int i= 0; i<active_lights_n; i++){
 
-		//Mirar si la luz es luz_direcciona
+		//Mirar si la luz es lDIRECCIONAL
 		if(theLights[i].position[3] == 0.0){
-			L4 = (-1.0) * theLights[i].position;
+			L4 = (-1.0) * theLights[i].position; //(-1.0) es el opuesto(rebota)
 			L = normalize(L4.xyz);
 			luz_direccional(i,L,N,V, color_difuso, color_especular);
 		
-		//Mirar SI la luz es posicional o spotlight
+		//Mirar SI la luz es POSICIONAL Y SPOTLIGHT
 		} else {
 
-			L = theLights[i].position -positionEye;
+			L = (theLights[i].position -positionEye).xyz;
 			Ln=normalize(L);
 			//luz_posiciohal();
 
-			// Luz es point o posicional
-			if (theLights[i].cosCutOff[3] == 0.0) {
+			// Si la luz es POSICIONAL (O point)
+			//if (theLights[i].cosCutOff[3] == 0.0) {
 				//Crear funcion luz_positional(i, L, N, V, dist, color_difuso, color_especular);
 			
 			//Luz spot
-			} else if(theLights[i].cosCutOff[3] > 0.0)){
-				//Crear funcion luz_spot(i, L, N, V, dist, color_difuso, color_especular);
-			}
+			//} //else if(theLights[i].cosCutOff[3] > 0.0){
+			//	//Crear funcion luz_spot(i, L, N, V, dist, color_difuso, color_especular);
+			//}
 
 
 			//mirar transparencias ->cspot  *color
 		}
+
+		float NoL = lambert_factor(N,L);
+
+		if(NoL > 0.0){
+			color_difuso += theLights[i].diffuse * theMaterial.diffuse*NoL;
+		}
+
 	}
 
-	
+	f_color = vec4(scene_ambient + color_difuso + color_especular, 1.0);
 
 	f_texCoord = v_texCoord;
 	gl_Position = modelToClipMatrix * vec4(v_position, 1);
