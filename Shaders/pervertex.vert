@@ -41,7 +41,6 @@ float lambert_factor(in vec3 n, in vec3 l){
 	* La normal del vertice
 	* La direccion donde esta la luz
 	* La direccion donde esta la camara
-	* Llamado factor de brillo (shininess)
 */
  float specular_factor(in vec3 n, in vec3 l, in vec3 v, in float m){
 	vec3 r;
@@ -77,8 +76,21 @@ void luz_direccional (in int i,in vec3 L,in vec3 N,in vec3 V, inout vec3 color_d
 	}
 }
 
-//void luz_posiciohal(in int i,in vec3 L,in vec3 N,in vec3 V, inout vec3 color_difuso, inout vec3 color_especular){
+//void luz_posicional(in int i,in vec3 L,in vec3 N,in vec3 V, inout vec3 color_difuso, inout vec3 color_especular){
 
+	//Componente difusa
+	float NoL = lambert_factor(N,L);
+	//atenuacion y crear!!!!
+	
+
+	if(NoL > 0.0){
+		color_difuso += theLights[i].diffuse * theMaterial.diffuse * NoL;
+
+		//Componente especular
+		float f_specular = specular_factor(N, L, V, theMaterial.shininess)*atenuacion;
+
+		color_especular += theLights[i].specular * theMaterial.specular * f_specular * NoL*atenuacion;
+	}
 //}
 
 
@@ -118,7 +130,7 @@ void main() {
 
 			// Si la luz es POSICIONAL (O point)
 			//if (theLights[i].cosCutOff[3] == 0.0) {
-				//Crear funcion luz_positional(i, L, N, V, dist, color_difuso, color_especular);
+				// luz_positional(i, L, N, V, dist, color_difuso, color_especular);
 			
 			//Luz spot
 			//} //else if(theLights[i].cosCutOff[3] > 0.0){
