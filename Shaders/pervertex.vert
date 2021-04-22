@@ -76,22 +76,54 @@ void luz_direccional (in int i,in vec3 L,in vec3 N,in vec3 V, inout vec3 color_d
 	}
 }
 
-//void luz_posicional(in int i,in vec3 L,in vec3 N,in vec3 V, inout vec3 color_difuso, inout vec3 color_especular){
+
+void luz_positional(in int i,in vec3 L,in vec3 N,in vec3 V, inout vec3 color_difuso, inout vec3 color_especular, float att){
 
 	//Componente difusa
 	float NoL = lambert_factor(N,L);
-	//atenuacion y crear!!!!
 	
-
 	if(NoL > 0.0){
-		color_difuso += theLights[i].diffuse * theMaterial.diffuse * NoL;
+		color_difuso += theLights[i].diffuse * theMaterial.diffuse * NoL*att;
 
 		//Componente especular
-		float f_specular = specular_factor(N, L, V, theMaterial.shininess)*atenuacion;
+		float f_specular = specular_factor(N, L, V, theMaterial.shininess);
 
-		color_especular += theLights[i].specular * theMaterial.specular * f_specular * NoL*atenuacion;
+		color_especular += theLights[i].specular * theMaterial.specular * f_specular * NoL*att;
 	}
-//}
+}
+
+void luz_spot(in int i, in vec3 L,in vec3 N,in vec3 V, inout vec3 color_difuso, inout vec3 color_especular){
+
+	vec3 dir_foco= normalize(theLights[i].spotDir);
+
+	float fac_int = dot(-L, dir_foco);
+	
+	float cspot = 0.0; //Factor de intensidad del foco
+
+	//Componente difusa
+	float NoL = lambert_factor(N,L);
+
+
+	if(NoL>0.0){
+
+		//Si el angulo es >0 y está DENTRO DEL ANGULO DEL FOCO --> modificar el factor
+		if(fac_int >= theLights[i].cosCutOff){
+
+			if(fac_int > 0.0){
+				cspot = pow(fac_int, theLights[i].exponent);
+			}
+
+			if(cspot > 0.0){
+				color_difuso += theLights[i].diffuse * theMaterial.diffuse * NoL *cspot;
+
+				//Componente especular
+				float f_specular = specular_factor (N,L,V,theMaterial.shininess);
+
+				color_especular += theLights[i].specular * theMaterial.specular * f_specular * NoL * cspot;
+			}
+		}
+	}
+}
 
 
 void main() {
@@ -106,8 +138,10 @@ void main() {
 	//Posicion del vertice del espacio del modelo al espacio de la camara
 	positionEye = modelToCameraMatrix * vec4(v_position, 1.0);
 
-	V4= (0.0,0.0,0.0,1.0) - positionEye;
+	V4= (0.0, 0.0, 0.0, 1.0) - positionEye;
 	V= normalize(V4.xyz);
+
+	float att=1.0; //atenuacion es reduccion --> atenuacion a 1 esta APAGADA
 
 	//acumuladores donde voy dejando el color
 	vec3 color_difuso = vec3(0.0, 0.0, 0.0); //tambien se puede poner -> vec3 color_difuso = vec3(0.0);
@@ -115,7 +149,7 @@ void main() {
 
 	for(int i= 0; i<active_lights_n; i++){
 
-		//Mirar si la luz es lDIRECCIONAL
+		//Mirar si la luz es DIRECCIONAL
 		if(theLights[i].position[3] == 0.0){
 			L4 = (-1.0) * theLights[i].position; //(-1.0) es el opuesto(rebota)
 			L = normalize(L4.xyz);
@@ -124,18 +158,27 @@ void main() {
 		//Mirar SI la luz es POSICIONAL Y SPOTLIGHT
 		} else {
 
-			L = (theLights[i].position -positionEye).xyz;
-			Ln=normalize(L);
-			//luz_posiciohal();
-
-			// Si la luz es POSICIONAL (O point)
-			//if (theLights[i].cosCutOff[3] == 0.0) {
-				// luz_positional(i, L, N, V, dist, color_difuso, color_especular);
+			L = (theLights[i].position -positionEye).xyz; //1º
+			float d = length(L);						 //2º -->Consigo la distancia entre 2 puntos
+			L=normalize(L); 							//3!
 			
-			//Luz spot
-			//} //else if(theLights[i].cosCutOff[3] > 0.0){
-			//	//Crear funcion luz_spot(i, L, N, V, dist, color_difuso, color_especular);
-			//}
+			// Si la luz es POSICIONAL (O point)
+			if (theLights[i].cosCutOff > 0.0) {
+				
+				//Luz SPOT
+				luz_spot(i, L, N, V, color_difuso, color_especular);
+				
+			}else{
+				
+				//ATENUACION
+				att = theLights[i].attenuation[0] + theLights[i].attenuation[1] *d + theLights[i].attenuation[2]*d*d;
+				if(att>0.0){
+					att = 1/att;
+				}
+			
+				luz_positional(i, L, N, V, color_difuso, color_especular, att);
+
+			}
 
 
 			//mirar transparencias ->cspot  *color

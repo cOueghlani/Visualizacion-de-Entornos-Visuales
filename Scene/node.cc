@@ -514,6 +514,25 @@ void Node::setCulled(bool culled) {
 
 void Node::frustumCull(Camera *cam) {
 
+	int culled = cam->checkFrustum(m_containerWC, 0);
+	if(culled == -1 { //dentro del frustrum
+		setCulled(false);
+
+	} else if(culled == 1) { //fuera del frustrum
+		setCulled(true);
+
+	//culled == 0 --> intersectan
+	} else { //en caso de que el BB inserte con el frustrum --> llamar al frustrumcull CON LOS HIJOS y la cam
+		m_isCulled = false;
+		if(!m_gObject) {
+			for(list<Node *>::iterator it = m_children.begin(), end = m_children.end();
+				it != end; ++it) {
+				Node *theChild = *it;
+				theChild->frustumCull(cam);
+			}
+		}
+	}
+
 }
 
 // @@ TODO: Check whether a BSphere (in world coordinates) intersects with a
