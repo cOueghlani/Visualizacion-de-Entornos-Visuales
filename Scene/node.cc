@@ -515,7 +515,7 @@ void Node::setCulled(bool culled) {
 void Node::frustumCull(Camera *cam) {
 
 	int culled = cam->checkFrustum(m_containerWC, 0);
-	if(culled == -1 { //dentro del frustrum
+	if(culled == -1) { //dentro del frustrum
 		setCulled(false);
 
 	} else if(culled == 1) { //fuera del frustrum
