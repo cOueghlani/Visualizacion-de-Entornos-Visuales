@@ -20,5 +20,18 @@ varying vec3 f_positionw; // world space
 varying vec3 f_normalw;   // world space
 
 void main() {
+
+	f_position = vec3(modelToCameraMatrix * vec4(v_position, 1.0));	//positionEye
+
+	f_positionw = vec3(modelToWorldMatrix * vec4(v_position, 1.0));
+
+	f_viewDirection = vec3((0.0, 0.0, 0.0, 1.0) - f_position); //V
+
+	f_normal = vec3(modelToCameraMatrix * vec4(v_normal, 0.0)); // N
+
+	f_normalw = vec3(modelToWorldMatrix * vec4(v_normal, 0.0));
+
+	f_texCoord= v_texCoord;
+
 	gl_Position = modelToClipMatrix * vec4(v_position, 1.0);
 }

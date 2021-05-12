@@ -477,6 +477,9 @@ void Node::draw() {
 
 		rs->push(RenderState::modelview); // push current matrix into modelview stack
 		rs->addTrfm(RenderState::modelview, m_placementWC); // Add T transformation to modelview
+		
+		rs->loadTrfm(RenderState::model, m_placementWC); //PARA ENVIROMENT!!!
+		
 		m_gObject->draw(); // draw geometry object (gobj)
 		rs->pop(RenderState::modelview); //Elimina el espacio de la pila
 	

@@ -184,11 +184,11 @@ void main() {
 			//mirar transparencias ->cspot  *color
 		}
 
-		float NoL = lambert_factor(N,L);
+		//float NoL = lambert_factor(N,L);
 
-		if(NoL > 0.0){
-			color_difuso += theLights[i].diffuse * theMaterial.diffuse*NoL;
-		}
+		//if(NoL > 0.0){
+		//	color_difuso += theLights[i].diffuse * theMaterial.diffuse*NoL;
+		//}
 
 	}
 

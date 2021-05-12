@@ -45,9 +45,9 @@ using std::string;
 //  - Node::attachGobject(GObject *gobj ): attach geometry object to node.
 //  - RenderState::instance()->setSkybox(Node * skynode): Set sky node.
 
-void CreateSkybox(GObject *gobj,
+void CreateSkybox(GObject *gobj,	// un objeto geom ́etrico (cubo)
 				  ShaderProgram *skyshader,
-				  const std::string &ctexname) {
+				  const std::string &ctexname) { //nombre del cubo
 	if (!skyshader) {
 		fprintf(stderr, "[E] Skybox: no sky shader\n");
 		exit(1);
@@ -63,6 +63,30 @@ void CreateSkybox(GObject *gobj,
 		exit(1);
 	}
 	/* =================== PUT YOUR CODE HERE ====================== */
+
+
+	// - Create a new material.
+	Material *mat = MaterialManager::instance()->create("miMaterial"); //create a new material with name matName (has to be unique)
+
+	// - Assign cubemap texture to material.
+	mat -> Material::setTexture(ctex); //assign texture to material.
+
+	// - Assign material to geometry object gobj
+	gobj -> GObject::setMaterial(mat); //assign material to geometry object.
+
+	// - Create a new Node.
+	Node *nodo = NodeManager::instance()->create("miNodo"); //create a new node with name nodeName (has to be unique).
+
+	// - Assign shader to node.
+	nodo -> Node::attachShader( skyshader ); //attach shader to node. 
+	
+
+	// - Assign geometry object to node.
+	nodo -> Node::attachGobject( gobj ); // attach geometry object to node.
+
+	// - Set sky node in RenderState.
+	RenderState::instance()->setSkybox(nodo); // Set sky node.
+
 
 	/* =================== END YOUR CODE HERE ====================== */
 }
@@ -85,7 +109,7 @@ void CreateSkybox(GObject *gobj,
 //
 // Useful functions:
 //
-// - RenderState::instance()->getShader: get current shader.
+// - RenderState::instance()->getShader: get actual shader.
 // - RenderState::instance()->setShader(ShaderProgram * shader): set shader.
 // - RenderState::instance()->push(RenderState::modelview): push MODELVIEW
 //   matrix.
@@ -104,6 +128,44 @@ void DisplaySky(Camera *cam) {
 	if (!skynode) return;
 
 	/* =================== PUT YOUR CODE HERE ====================== */
+
+	//vector3 P = cam -> getPosition();
+	Trfm3D localT;
+	localT.setTrans(cam->getPosition());
+
+	// - Almacena previous shader
+	ShaderProgram *prev_shader = rs->getShader();
+
+	// - Set skybox shader
+	ShaderProgram *sky_shader = skynode-> getShader();
+
+	// - Move Skybox to camera location, so that it always surrounds camera.
+
+	// PUSH
+	rs->push(RenderState::modelview);
+	
+	rs->addTrfm(RenderState::modelview, &localT);
+
+
+	// - Disable depth test.
+	glDisable(GL_DEPTH_TEST);
+
+	// - Draw skybox object.
+	skynode->draw();
+
+	// - Restore depth test
+	glEnable(GL_DEPTH_TEST);
+
+	if(!sky_shader){
+		fprintf(stderr, "[E] DisplaySky: el cielo no tiene Shader");
+		exit(1);
+	}
+
+	// POP
+	rs->pop(RenderState::modelview);
+
+	// - Set previous shader
+	rs->setShader(prev_shader);
 
 	/* =================== END YOUR CODE HERE ====================== */
 }
