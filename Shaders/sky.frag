@@ -1,5 +1,8 @@
 #version 120
 
+//Calcula el color del p ixel a partir de las coordenadas de textura (variablevaryingde tipovec3) y de la textura 
+//mediante lafunci ́ontextureCube.
+
 varying vec3 f_texCoord;
 uniform samplerCube cubemap;
 

@@ -1,5 +1,10 @@
 #version 120
 
+// Elvertex-shaderle pasa las coordenadas de la textura alfragment-shadermediante la variablevaryingdenominadaftexCoord(de tipovec3).  
+// Estas coordenadas deben ser la posicion del vertice pero transformada al espacio levogiro (esto es, debemos cambiar elsigno de la 
+// coordenadaZ).
+
+
 uniform mat4 modelToCameraMatrix;
 uniform mat4 cameraToClipMatrix;
 uniform mat4 modelToWorldMatrix;

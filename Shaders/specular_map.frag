@@ -1,5 +1,10 @@
 #version 120
 
+//Para la realización de esta práctica opcional me he basado en los apuntes proporcionados desde la plataforma egela y por 
+//la ayuda de la profesora.
+// Cambio en las luces direccional, especular y spot --> cambio de theMaterial.specular a textura.specular
+
+
 uniform int active_lights_n; // Number of active lights (< MG_MAX_LIGHT)
 uniform vec3 scene_ambient; // Scene ambient light
 
@@ -160,8 +165,8 @@ void main() {
 		} else {
 
 			L = (theLights[i].position - vec4(f_position, 1.0)).xyz; //1º modificado de positionEye a f_position 
-			float d = length(L);						 //2º -->Consigo la distancia entre 2 puntos
-			L=normalize(L); 							//3!
+			float d = length(L);									 //2º -->Consigo la distancia entre 2 puntos
+			L=normalize(L); 										//3!
 			
 			// Si la luz es POSICIONAL (O point)
 			if (theLights[i].cosCutOff > 0.0) {

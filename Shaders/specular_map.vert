@@ -1,3 +1,7 @@
+//Para la realización de esta práctica opcional me he basado en los apuntes proporcionados desde la plataforma egela y por 
+//la ayuda de la profesora.
+// specular_map.vert es practicamenteuna copia del shader perfragment.vert
+
 #version 120
 
 attribute vec3 v_position;

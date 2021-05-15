@@ -1,5 +1,11 @@
 #version 120
 
+// Para implementar la clase environment_map, segunda parte de la práctica plus con dificultad media, me basé en los apuntes proporcionados 
+// por la profesora, al igual que las explicaciones dasdas en clase y a la ayuda facilitada por la profesora mediante las tutorias y correos.
+// Además de esto, accedí a: https://en.wikipedia.org/wiki/Cube_mapping para tener una ayuda extra.
+// Tube problemas para la realización de esta clase y obtuve ayuda de al tutoría que realizó la profesora con mi compañero Unai.
+
+
 uniform int active_lights_n; // Number of active lights (< MG_MAX_LIGHT)
 uniform vec3 scene_ambient; // Scene ambient light
 

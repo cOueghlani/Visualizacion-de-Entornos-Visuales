@@ -1,5 +1,6 @@
 #version 120
 
+
 uniform int active_lights_n; // Number of active lights (< MG_MAX_LIGHT)
 uniform vec3 scene_ambient; // Scene ambient light
 
@@ -154,8 +155,8 @@ void main() {
 		} else {
 
 			L = (theLights[i].position - vec4(f_position, 1.0)).xyz; //1º modificado de positionEye a f_position 
-			float d = length(L);						 //2º -->Consigo la distancia entre 2 puntos
-			L=normalize(L); 							//3!
+			float d = length(L);						 			//2º -->Consigo la distancia entre 2 puntos
+			L=normalize(L); 										//3!
 			
 			// Si la luz es POSICIONAL (O point)
 			if (theLights[i].cosCutOff > 0.0) {
@@ -174,9 +175,6 @@ void main() {
 				luz_positional(i, L, N, V, color_difuso, color_especular, att);
 
 			}
-
-
-			//mirar transparencias ->cspot  *color
 		}
 	}
 

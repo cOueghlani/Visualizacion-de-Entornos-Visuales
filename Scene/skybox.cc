@@ -1,3 +1,8 @@
+// Para implementar la clase skybox.cc, primera parte de la práctica plus con dificultad media, me basé en los apuntes proporcionados 
+// por la profesora, al igual que las explicaciones dasdas en clase y a la ayuda facilitada por la profesora mediante las tutorias y correos.
+// Para esta clase he implementado las funciones CreateSkyBox y DisplaySky.
+
+
 #include <vector>
 #include "skybox.h"
 #include "tools.h"
